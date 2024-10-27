@@ -29,5 +29,13 @@ const server = http.createServer(app);
 //- WebSocket server
 const wss = new WebSocket.Server({ server }); //* Create a WebSocket server by passing the HTTP server instance. This allows both servers to operate on the same port.
 
+//- Handle event when client connect WebSocket server
+wss.on("connection", (socket) => {
+  socket.send("hello client"); //* WebSocket server send message object to client
+  socket.on("message", (message) => {
+    console.log(message.toString());
+  }); //* Handle message when client send message to WebSocket server
+});
+
 //- server listen
 server.listen(PORT, handleServerListen);
