@@ -20,10 +20,15 @@ const handleServerListen = () => {
 const httpServer = http.createServer(app);
 const webSocketServer = new WebSocket.Server({ server: httpServer });
 
+const sockets = [];
+
 webSocketServer.on("connection", (socket) => {
+  sockets.push(socket);
   socket.on("message", (msg) => {
     const parsedMsg = JSON.parse(msg);
-    console.log(parsedMsg);
+    sockets.forEach((client) => {
+      client.send(JSON.stringify(parsedMsg));
+    });
   });
 });
 
