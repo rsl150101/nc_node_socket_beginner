@@ -20,7 +20,9 @@ const handleChatSubmit = (e) => {
 
 socket.addEventListener("message", (msg) => {
   const parsedMsg = JSON.parse(msg.data);
-  console.log(parsedMsg);
+  const li = document.createElement("li");
+  li.innerText = `${parsedMsg.nickname}: ${parsedMsg.msg}`;
+  messageList.append(li);
 });
 
 chatForm.addEventListener("submit", handleChatSubmit);
