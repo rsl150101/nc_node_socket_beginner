@@ -20,4 +20,11 @@ const handleServerListen = () => {
 const httpServer = http.createServer(app);
 const webSocketServer = new WebSocket.Server({ server: httpServer });
 
+webSocketServer.on("connection", (socket) => {
+  socket.on("message", (msg) => {
+    const parsedMsg = JSON.parse(msg);
+    console.log(parsedMsg);
+  });
+});
+
 httpServer.listen(PORT, handleServerListen);
