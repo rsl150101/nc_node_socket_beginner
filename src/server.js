@@ -29,12 +29,16 @@ const server = http.createServer(app);
 //- WebSocket server
 const wss = new WebSocket.Server({ server }); //* Create a WebSocket server by passing the HTTP server instance. This allows both servers to operate on the same port.
 
+//- fake database
+const sockets = [];
+
 //- Handle event when client connect WebSocket server
 wss.on("connection", (socket) => {
+  sockets.push(socket);
   socket.send("hello client"); //* WebSocket server send message object to client
   socket.on("message", (message) => {
-    console.log(message.toString());
-  }); //* Handle message when client send message to WebSocket server
+    sockets.forEach((socket) => socket.send(message.toString()));
+  }); //* Handle message each socket when client send message to WebSocket server
 });
 
 //- server listen
