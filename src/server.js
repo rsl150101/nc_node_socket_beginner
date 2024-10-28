@@ -35,8 +35,20 @@ const sockets = [];
 //- Handle event when client connect WebSocket server
 wss.on("connection", (socket) => {
   sockets.push(socket);
+  socket["nickname"] = "Anonymous";
   socket.on("message", (message) => {
-    sockets.forEach((socket) => socket.send(message.toString()));
+    const parsedMsg = JSON.parse(message);
+
+    switch (parsedMsg.type) {
+      case "chat":
+        sockets.forEach((s) =>
+          s.send(`${socket.nickname}: ${parsedMsg.message}`)
+        );
+        break;
+      case "nickname":
+        socket["nickname"] = parsedMsg.message;
+        break;
+    }
   }); //* Handle message each socket when client send message to WebSocket server
 });
 
