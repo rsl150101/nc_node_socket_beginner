@@ -26,7 +26,10 @@ const ioServer = new Server(httpServer);
 
 //-SocketIO server connect
 ioServer.on("connection", (socket) => {
-  console.log(socket);
+  socket.on("enterRoom", (msg, fn) => {
+    console.log(msg);
+    fn();
+  });
 });
 
 httpServer.listen(PORT, handleServerListen);
