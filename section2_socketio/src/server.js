@@ -26,9 +26,9 @@ const ioServer = new Server(httpServer);
 
 //-SocketIO server connect
 ioServer.on("connection", (socket) => {
-  socket.on("enterRoom", (msg, fn) => {
-    console.log(msg);
-    fn();
+  socket.on("enterRoom", (roomName, showRoom) => {
+    socket.join(roomName);
+    showRoom();
   });
 });
 
