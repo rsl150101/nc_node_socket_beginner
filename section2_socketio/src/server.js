@@ -26,17 +26,24 @@ const ioServer = new Server(httpServer);
 
 //-SocketIO server connect
 ioServer.on("connection", (socket) => {
-  socket.on("enterRoom", (roomName, showRoom) => {
+  socket.on("enterRoom", (roomName, enterName, showRoom) => {
+    socket.nickname = enterName;
     socket.join(roomName);
     showRoom();
-    ioServer.to(roomName).emit("welcome", socket.id);
+
+    socket.on("editNickname", (nickname) => {
+      ioServer.to(roomName).emit("editNickname", socket.nickname, nickname);
+      socket.nickname = nickname;
+    });
+
+    ioServer.to(roomName).emit("welcome", socket.nickname);
     socket.on("disconnecting", () => {
       socket.rooms.forEach((roomName) => {
-        socket.to(roomName).emit("bye", socket.id);
+        socket.to(roomName).emit("bye", socket.nickname);
       });
     });
     socket.on("newMessage", (chatMessage, roomName, done) => {
-      socket.to(roomName).emit("newMessage", chatMessage, socket.id);
+      socket.to(roomName).emit("newMessage", chatMessage, socket.nickname);
       done();
     });
   });

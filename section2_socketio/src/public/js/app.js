@@ -10,6 +10,16 @@ room.hidden = true;
 
 let roomName;
 
+//- Handle DOM event
+const handleRoomSubmit = (e) => {
+  e.preventDefault();
+  const roomInput = form.querySelector("#roomName");
+  const nameInput = form.querySelector("#nickname");
+  roomName = roomInput.value;
+  socket.emit("enterRoom", roomName, nameInput.value, showRoom);
+  roomInput.value = "";
+};
+
 const handleChatSubmit = (chat) => (e) => {
   e.preventDefault();
   const input = chat.querySelector("input");
@@ -20,13 +30,24 @@ const handleChatSubmit = (chat) => (e) => {
   input.value = "";
 };
 
+const handleEditNicknameSubmit = (editName) => (e) => {
+  e.preventDefault();
+  const input = editName.querySelector("input");
+  socket.emit("editNickname", input.value);
+};
+
 const showRoom = () => {
   welcome.hidden = true;
   room.hidden = false;
   const roomTitle = room.querySelector("h3");
   roomTitle.innerText = `Room #${roomName}`;
-  const chat = room.querySelector("form");
+  const chat = room.querySelector("#chat");
+  const editName = room.querySelector("#editNickname");
   chat.addEventListener("submit", handleChatSubmit(chat));
+  editName.addEventListener("submit", handleEditNicknameSubmit(editName));
+  socket.on("welcome", (nickname) => {
+    addMessage(`${nickname} joined!`);
+  });
 };
 
 const addMessage = (msg) => {
@@ -36,25 +57,16 @@ const addMessage = (msg) => {
   messageList.appendChild(li);
 };
 
-//- Handle DOM event
-const handleRoomSubmit = (e) => {
-  e.preventDefault();
-  const input = form.querySelector("input");
-  roomName = input.value;
-  socket.emit("enterRoom", roomName, showRoom);
-  input.value = "";
-};
-
-socket.on("welcome", (socketId) => {
-  addMessage(`${socketId} joined!`);
+socket.on("bye", (nickname) => {
+  addMessage(`${nickname} left.`);
 });
 
-socket.on("bye", (socketId) => {
-  addMessage(`${socketId} left.`);
+socket.on("newMessage", (chatMessage, nickname) => {
+  addMessage(`${nickname} : ${chatMessage}`);
 });
 
-socket.on("newMessage", (chatMessage, socketId) => {
-  addMessage(`${socketId} : ${chatMessage}`);
+socket.on("editNickname", (prevNickname, nickname) => {
+  addMessage(`Rename ${prevNickname} to ${nickname}`);
 });
 
 form.addEventListener("submit", handleRoomSubmit);
