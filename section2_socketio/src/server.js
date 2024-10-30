@@ -35,6 +35,10 @@ ioServer.on("connection", (socket) => {
         socket.to(roomName).emit("bye", socket.id);
       });
     });
+    socket.on("newMessage", (chatMessage, roomName, done) => {
+      socket.to(roomName).emit("newMessage", chatMessage, socket.id);
+      done();
+    });
   });
 });
 
