@@ -17,6 +17,13 @@ const showRoom = () => {
   roomTitle.innerText = `Room #${roomName}`;
 };
 
+const addMessage = (msg) => {
+  const messageList = room.querySelector("ul");
+  const li = document.createElement("li");
+  li.innerText = msg;
+  messageList.appendChild(li);
+};
+
 //- Handle DOM event
 const handleRoomSubmit = (e) => {
   e.preventDefault();
@@ -25,5 +32,9 @@ const handleRoomSubmit = (e) => {
   socket.emit("enterRoom", roomName, showRoom);
   input.value = "";
 };
+
+socket.on("welcome", (socketId) => {
+  addMessage(`${socketId} joined!`);
+});
 
 form.addEventListener("submit", handleRoomSubmit);

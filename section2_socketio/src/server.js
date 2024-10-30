@@ -29,6 +29,7 @@ ioServer.on("connection", (socket) => {
   socket.on("enterRoom", (roomName, showRoom) => {
     socket.join(roomName);
     showRoom();
+    ioServer.to(roomName).emit("welcome",socket.id);
   });
 });
 
