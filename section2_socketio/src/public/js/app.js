@@ -37,4 +37,8 @@ socket.on("welcome", (socketId) => {
   addMessage(`${socketId} joined!`);
 });
 
+socket.on("bye", (socketId) => {
+  addMessage(`${socketId} left.`);
+});
+
 form.addEventListener("submit", handleRoomSubmit);
