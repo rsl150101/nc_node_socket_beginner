@@ -40,10 +40,17 @@ ioServer.on("connection", (socket) => {
 
   socket.on("enterRoom", (roomName, nickname, done) => {
     socket.join(roomName);
-    done(roomName);
+    done();
     ioServer.sockets.emit("editRoomList", pulbicRoomList());
     ioServer.to(roomName).emit("welcome", roomName, nickname);
-    socket.emit("disconnecting", nickname);
+    socket.on("disconnecting", () => {
+      socket.rooms.forEach((room) => {
+        socket.to(room).emit("bye", nickname);
+      });
+    });
+    socket.on("newMessage", (msg) => {
+      socket.to(roomName).emit("newMessage", nickname, msg);
+    });
   });
 });
 
