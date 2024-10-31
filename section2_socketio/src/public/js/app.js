@@ -40,13 +40,17 @@ const showRoom = () => {
   welcome.hidden = true;
   room.hidden = false;
   const roomTitle = room.querySelector("h3");
-  roomTitle.innerText = `Room #${roomName}`;
   const chat = room.querySelector("#chat");
   const editName = room.querySelector("#editNickname");
   chat.addEventListener("submit", handleChatSubmit(chat));
   editName.addEventListener("submit", handleEditNicknameSubmit(editName));
-  socket.on("welcome", (nickname) => {
+  socket.on("welcome", (nickname, userCount) => {
+    roomTitle.innerText = `Room #${roomName} (${userCount})`;
     addMessage(`${nickname} joined!`);
+  });
+  socket.on("bye", (nickname, userCount) => {
+    roomTitle.innerText = `Room #${roomName} (${userCount})`;
+    addMessage(`${nickname} left.`);
   });
 };
 
@@ -60,7 +64,6 @@ const addMessage = (msg) => {
 //- Handle socket Event
 const handleRoomList = (publicRooms) => {
   const roomList = welcome.querySelector("ul");
-  console.log(roomList.children);
 
   Array.from(roomList.children).forEach((li) => li.remove());
   publicRooms.forEach((room) => {
@@ -69,10 +72,6 @@ const handleRoomList = (publicRooms) => {
     roomList.append(li);
   });
 };
-
-socket.on("bye", (nickname) => {
-  addMessage(`${nickname} left.`);
-});
 
 socket.on("newMessage", (chatMessage, nickname) => {
   addMessage(`${nickname} : ${chatMessage}`);

@@ -40,6 +40,11 @@ const publicRooms = () => {
   return publicRooms;
 };
 
+//- Return room user count
+const roomUserCount = (roomName) => {
+  return ioServer.sockets.adapter.rooms.get(roomName)?.size;
+};
+
 //-SocketIO server connect
 ioServer.on("connection", (socket) => {
   socket.on("enterRoom", (roomName, enterName, showRoom) => {
@@ -52,11 +57,15 @@ ioServer.on("connection", (socket) => {
       socket.nickname = nickname;
     });
 
-    ioServer.to(roomName).emit("welcome", socket.nickname);
+    ioServer
+      .to(roomName)
+      .emit("welcome", socket.nickname, roomUserCount(roomName));
 
     socket.on("disconnecting", () => {
       socket.rooms.forEach((roomName) => {
-        socket.to(roomName).emit("bye", socket.nickname);
+        socket
+          .to(roomName)
+          .emit("bye", socket.nickname, roomUserCount(roomName) - 1);
       });
     });
     socket.on("newMessage", (chatMessage, roomName, done) => {
