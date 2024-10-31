@@ -33,7 +33,7 @@ const handleChatSubmit = (chat) => (e) => {
 const handleEditNicknameSubmit = (editName) => (e) => {
   e.preventDefault();
   const input = editName.querySelector("input");
-  socket.emit("editNickname", input.value);
+  socket.emit("editNickname", roomName, input.value);
 };
 
 const showRoom = () => {
