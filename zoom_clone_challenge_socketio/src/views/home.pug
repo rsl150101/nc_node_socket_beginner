@@ -21,10 +21,10 @@ html(lang="en")
                 h2
                 ul
                 form#msg
-                    input#roomName(type="text", placeholder="Room name", required)
+                    input(type="text", placeholder="Write a message", required)
                     button Send
                 form#editNickname
-                    input#roomName(type="text", placeholder="Room name", required)
+                    input(type="text", placeholder="Edit Nickname", required)
                     button Edit
         script(src="/socket.io/socket.io.js") 
         script(src="/public/js/app.js") 
