@@ -48,7 +48,10 @@ const addMsg = (msg) => {
 socket.on("editRoomList", handleRoomList);
 socket.on("welcome", (roomName, nickname) => {
   handleRoomTitle(roomName);
-  addMsg(`${nickname} joined`);
+  addMsg(`${nickname} joined!`);
+});
+socket.on("disconnecting", (nickname) => {
+  addMsg(`${nickname} left.`);
 });
 
 enterRoomForm.addEventListener("submit", handleEnterRoomSubmit);

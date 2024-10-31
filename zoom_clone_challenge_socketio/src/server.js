@@ -43,6 +43,7 @@ ioServer.on("connection", (socket) => {
     done(roomName);
     ioServer.sockets.emit("editRoomList", pulbicRoomList());
     ioServer.to(roomName).emit("welcome", roomName, nickname);
+    socket.emit("disconnecting", nickname);
   });
 });
 
