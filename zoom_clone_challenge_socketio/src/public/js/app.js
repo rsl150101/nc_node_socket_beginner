@@ -16,12 +16,17 @@ const handleMsgForm = (e) => {
   msgInput.value = "";
 };
 
+const handleEditNicknameForm = (e) => {
+  e.preventDefault();
+  const editNicknameInput = editNicknameForm.querySelector("input");
+  socket.emit("changeNickname", editNicknameInput.value);
+};
 const showChat = () => {
   enterRoomDiv.hidden = true;
   chatDiv.hidden = false;
-  const editNicknameInput = editNicknameForm.querySelector("input");
 
   msgForm.addEventListener("submit", handleMsgForm);
+  editNicknameForm.addEventListener("submit", handleEditNicknameForm);
 };
 
 const handleRoomList = (roomArr) => {
@@ -66,6 +71,9 @@ socket.on("bye", (nickname) => {
 });
 socket.on("newMessage", (nickname, msg) => {
   addMsg(`${nickname} : ${msg}`);
+});
+socket.on("changeNickname", (nickname, curNickname) => {
+  addMsg(`Rename ${nickname} to ${curNickname}`);
 });
 
 enterRoomForm.addEventListener("submit", handleEnterRoomSubmit);

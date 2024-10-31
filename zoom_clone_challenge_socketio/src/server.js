@@ -39,17 +39,24 @@ ioServer.on("connection", (socket) => {
   ioServer.sockets.emit("editRoomList", pulbicRoomList());
 
   socket.on("enterRoom", (roomName, nickname, done) => {
+    socket.nickname = nickname;
     socket.join(roomName);
     done();
     ioServer.sockets.emit("editRoomList", pulbicRoomList());
-    ioServer.to(roomName).emit("welcome", roomName, nickname);
+    ioServer.to(roomName).emit("welcome", roomName, socket.nickname);
+    socket.on("changeNickname", (curNickname) => {
+      ioServer
+        .to(roomName)
+        .emit("changeNickname", socket.nickname, curNickname);
+      socket.nickname = curNickname;
+    });
     socket.on("disconnecting", () => {
       socket.rooms.forEach((room) => {
-        socket.to(room).emit("bye", nickname);
+        socket.to(room).emit("bye", socket.nickname);
       });
     });
     socket.on("newMessage", (msg) => {
-      socket.to(roomName).emit("newMessage", nickname, msg);
+      socket.to(roomName).emit("newMessage", socket.nickname, msg);
     });
   });
 });
