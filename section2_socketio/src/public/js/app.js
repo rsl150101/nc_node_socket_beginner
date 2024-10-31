@@ -57,6 +57,19 @@ const addMessage = (msg) => {
   messageList.appendChild(li);
 };
 
+//- Handle socket Event
+const handleRoomList = (publicRooms) => {
+  const roomList = welcome.querySelector("ul");
+  console.log(roomList.children);
+
+  Array.from(roomList.children).forEach((li) => li.remove());
+  publicRooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+};
+
 socket.on("bye", (nickname) => {
   addMessage(`${nickname} left.`);
 });
@@ -68,5 +81,7 @@ socket.on("newMessage", (chatMessage, nickname) => {
 socket.on("editNickname", (prevNickname, nickname) => {
   addMessage(`Rename ${prevNickname} to ${nickname}`);
 });
+
+socket.on("editRooms", handleRoomList);
 
 form.addEventListener("submit", handleRoomSubmit);

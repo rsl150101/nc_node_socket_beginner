@@ -46,15 +46,13 @@ ioServer.on("connection", (socket) => {
     socket.nickname = enterName;
     socket.join(roomName);
     showRoom();
-
+    ioServer.sockets.emit("editRooms", publicRooms());
     socket.on("editNickname", (nickname) => {
       ioServer.to(roomName).emit("editNickname", socket.nickname, nickname);
       socket.nickname = nickname;
     });
 
     ioServer.to(roomName).emit("welcome", socket.nickname);
-
-    console.log(ioServer.sockets.adapter);
 
     socket.on("disconnecting", () => {
       socket.rooms.forEach((roomName) => {
@@ -64,6 +62,9 @@ ioServer.on("connection", (socket) => {
     socket.on("newMessage", (chatMessage, roomName, done) => {
       socket.to(roomName).emit("newMessage", chatMessage, socket.nickname);
       done();
+    });
+    socket.on("disconnect", () => {
+      ioServer.sockets.emit("editRooms", publicRooms());
     });
   });
 });
