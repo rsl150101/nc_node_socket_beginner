@@ -38,9 +38,11 @@ const pulbicRoomList = () => {
 ioServer.on("connection", (socket) => {
   ioServer.sockets.emit("editRoomList", pulbicRoomList());
 
-  socket.on("enterRoom", (roomName, nickname) => {
+  socket.on("enterRoom", (roomName, nickname, done) => {
     socket.join(roomName);
+    done(roomName);
     ioServer.sockets.emit("editRoomList", pulbicRoomList());
+    ioServer.to(roomName).emit("welcome", roomName, nickname);
   });
 });
 

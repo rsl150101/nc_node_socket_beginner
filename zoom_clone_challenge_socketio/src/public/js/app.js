@@ -8,6 +8,11 @@ const editNicknameForm = chatDiv.querySelector("#editNickname");
 
 chatDiv.hidden = true;
 
+const showChat = () => {
+  enterRoomDiv.hidden = true;
+  chatDiv.hidden = false;
+};
+
 const handleRoomList = (roomArr) => {
   const roomList = enterRoomDiv.querySelector("ul");
   Array.from(roomList.children).forEach((li) => {
@@ -22,10 +27,28 @@ const handleRoomList = (roomArr) => {
 
 const handleEnterRoomSubmit = (e) => {
   e.preventDefault();
+
   const roomNameInput = enterRoomForm.querySelector("#roomName");
   const nicknameInput = enterRoomForm.querySelector("#nickname");
-  socket.emit("enterRoom", roomNameInput.value, nicknameInput.value);
+  socket.emit("enterRoom", roomNameInput.value, nicknameInput.value, showChat);
+};
+
+const handleRoomTitle = (roomName) => {
+  const title = chatDiv.querySelector("h2");
+  title.innerText = roomName;
+};
+
+const addMsg = (msg) => {
+  const msgList = chatDiv.querySelector("ul");
+  const li = document.createElement("li");
+  li.innerText = msg;
+  msgList.append(li);
 };
 
 socket.on("editRoomList", handleRoomList);
+socket.on("welcome", (roomName, nickname) => {
+  handleRoomTitle(roomName);
+  addMsg(`${nickname} joined`);
+});
+
 enterRoomForm.addEventListener("submit", handleEnterRoomSubmit);
