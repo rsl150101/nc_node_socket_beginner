@@ -10,6 +10,21 @@ html(lang="en")
             h1 Zoom clone challenge Chat!
             hr
         main
-     
+            #enterRoom
+                form 
+                    input#roomName(type="text", placeholder="Room name", required)
+                    input#nickname(type="text", placeholder="Nickname", required)
+                    button Enter
+                h3 Opend Room
+                ul
+            #chat
+                h2
+                ul
+                form#msg
+                    input#roomName(type="text", placeholder="Room name", required)
+                    button Send
+                form#editNickname
+                    input#roomName(type="text", placeholder="Room name", required)
+                    button Edit
         script(src="/socket.io/socket.io.js") 
         script(src="/public/js/app.js") 
