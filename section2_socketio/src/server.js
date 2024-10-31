@@ -24,6 +24,22 @@ const handleServerListen = () => {
 const httpServer = http.createServer(app);
 const ioServer = new Server(httpServer);
 
+//- Return Pubilc room
+const publicRooms = () => {
+  const {
+    sockets: {
+      adapter: { rooms, sids },
+    },
+  } = ioServer;
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+  return publicRooms;
+};
+
 //-SocketIO server connect
 ioServer.on("connection", (socket) => {
   socket.on("enterRoom", (roomName, enterName, showRoom) => {
@@ -37,6 +53,9 @@ ioServer.on("connection", (socket) => {
     });
 
     ioServer.to(roomName).emit("welcome", socket.nickname);
+
+    console.log(ioServer.sockets.adapter);
+
     socket.on("disconnecting", () => {
       socket.rooms.forEach((roomName) => {
         socket.to(roomName).emit("bye", socket.nickname);
