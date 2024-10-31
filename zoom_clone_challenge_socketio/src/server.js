@@ -20,9 +20,27 @@ const handleServerListen = () => {
 const httpServer = http.createServer(app);
 const ioServer = SocketIO(httpServer);
 
+const pulbicRoomList = () => {
+  const {
+    sockets: {
+      adapter: { rooms, sids },
+    },
+  } = ioServer;
+  const pulbicRoomArr = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      pulbicRoomArr.push(key);
+    }
+  });
+  return pulbicRoomArr;
+};
+
 ioServer.on("connection", (socket) => {
+  ioServer.sockets.emit("editRoomList", pulbicRoomList());
+
   socket.on("enterRoom", (roomName, nickname) => {
     socket.join(roomName);
+    ioServer.sockets.emit("editRoomList", pulbicRoomList());
   });
 });
 

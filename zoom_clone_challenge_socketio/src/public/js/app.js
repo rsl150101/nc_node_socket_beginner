@@ -8,6 +8,18 @@ const editNicknameForm = chatDiv.querySelector("#editNickname");
 
 chatDiv.hidden = true;
 
+const handleRoomList = (roomArr) => {
+  const roomList = enterRoomDiv.querySelector("ul");
+  Array.from(roomList.children).forEach((li) => {
+    li.remove();
+  });
+  roomArr.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+};
+
 const handleEnterRoomSubmit = (e) => {
   e.preventDefault();
   const roomNameInput = enterRoomForm.querySelector("#roomName");
@@ -15,4 +27,5 @@ const handleEnterRoomSubmit = (e) => {
   socket.emit("enterRoom", roomNameInput.value, nicknameInput.value);
 };
 
+socket.on("editRoomList", handleRoomList);
 enterRoomForm.addEventListener("submit", handleEnterRoomSubmit);
