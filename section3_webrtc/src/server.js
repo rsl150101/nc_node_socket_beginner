@@ -20,6 +20,11 @@ const handleServerListen = () => {
 const httpServer = http.createServer(app);
 const ioServer = SocketIO(httpServer);
 
-ioServer.on("connection", (socket) => {});
+ioServer.on("connection", (socket) => {
+  socket.on("joinRoom", (roomName, done) => {
+    socket.join(roomName);
+    done();
+  });
+});
 
 httpServer.listen(PORT, handleServerListen);
