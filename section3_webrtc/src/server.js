@@ -24,6 +24,10 @@ ioServer.on("connection", (socket) => {
   socket.on("joinRoom", (roomName, done) => {
     socket.join(roomName);
     done();
+    socket.to(roomName).emit("welcome");
+    socket.on("offer", (offer) => {
+      socket.to(roomName).emit("offer", offer);
+    });
   });
 });
 
