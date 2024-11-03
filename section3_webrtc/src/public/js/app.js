@@ -14,6 +14,7 @@ let muted = false;
 let cameraOff = false;
 /** @type {RTCPeerConnection}*/
 let myPeerConnection;
+let myDatachannel;
 
 const getCameras = async () => {
   try {
@@ -122,7 +123,10 @@ const handleWelcomeFormSubmit = async (e) => {
 welcomeForm.addEventListener("submit", handleWelcomeFormSubmit);
 
 //- socket
+//* offer side
 socket.on("welcome", async () => {
+  myDatachannel = myPeerConnection.createDataChannel("chat");
+  myDatachannel.addEventListener("message", (event) => console.log(event.data));
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
   socket.emit("offer", offer, roomName);
@@ -131,6 +135,12 @@ socket.on("welcome", async () => {
 
 //* answer side
 socket.on("offer", async (offer) => {
+  myPeerConnection.addEventListener("datachannel", (event) => {
+    myDatachannel = event.channel;
+    myDatachannel.addEventListener("message", (event) => {
+      console.log(event.data);
+    });
+  });
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
