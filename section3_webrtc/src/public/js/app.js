@@ -119,17 +119,31 @@ socket.on("welcome", async () => {
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
   socket.emit("offer", offer, roomName);
+  myPeerConnection.addEventListener("icecandidate", handleOfferIce);
 });
 
+//* answer side
 socket.on("offer", async (offer) => {
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
   socket.emit("answer", answer, roomName);
+  myPeerConnection.addEventListener("icecandidate", handleAnswerIce);
 });
 
+//* offer side
 socket.on("answer", (answer) => {
   myPeerConnection.setRemoteDescription(answer);
+});
+
+//* answer side
+socket.on("offerIce", (ice) => {
+  myPeerConnection.addIceCandidate(ice); //* Add offer ICE
+});
+
+//* offer side
+socket.on("answerIce", (ice) => {
+  myPeerConnection.addIceCandidate(ice); //* Add answer ICE
 });
 
 //- RTC Code
@@ -138,4 +152,19 @@ const makeConnection = () => {
   myStream
     .getTracks()
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
+
+  myPeerConnection.addEventListener("track", handlePeerTrack);
+};
+
+const handleOfferIce = (event) => {
+  socket.emit("offerIce", event.candidate, roomName);
+};
+
+const handleAnswerIce = (event) => {
+  socket.emit("answerIce", event.candidate, roomName);
+};
+
+const handlePeerTrack = (event) => {
+  const peerFace = document.querySelector("#peerFace");
+  peerFace.srcObject = event.streams[0];
 };

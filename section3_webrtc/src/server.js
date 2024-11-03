@@ -31,6 +31,12 @@ ioServer.on("connection", (socket) => {
   socket.on("answer", (answer, roomName) => {
     socket.to(roomName).emit("answer", answer);
   });
+  socket.on("offerIce", (ice, roomName) => {
+    socket.to(roomName).emit("offerIce", ice);
+  });
+  socket.on("answerIce", (ice, roomName) => {
+    socket.to(roomName).emit("answerIce", ice);
+  });
 });
 
 httpServer.listen(PORT, handleServerListen);
